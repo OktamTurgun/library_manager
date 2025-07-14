@@ -3,26 +3,44 @@ from utils.helpers import *
 
 
 def show_books(books):
+    """Kitoblarni ko'rsatadi"""
     if not books:
         print("📚 Hech qanday kitob yo'q.")
         return
-    for book in books:
-        print(f"{book['title']} - {book['author']} ({book['year']})")
+    print(f"\n📚 Jami {len(books)} ta kitob:")
+    for i, book in enumerate(books, 1):
+        print(f"{i}. {book['title']} - {book['author']} ({book['year']})")
+
+
+def show_statistics(books):
+    """Kitoblar statistikasini ko'rsatadi"""
+    stats = get_book_statistics(books)
+    print(f"\n📊 Statistika:")
+    print(f"Jami kitoblar: {stats['total_books']}")
+    print(f"Mualliflar soni: {stats['authors_count']}")
+    if stats['years_range']:
+        print(
+            f"Yillar oralig'i: {stats['years_range'][0]} - {stats['years_range'][1]}")
+    if stats['most_common_author']:
+        print(f"Eng ko'p kitob yozgan muallif: {stats['most_common_author']}")
 
 
 def menu():
+    """Asosiy menyu"""
     books = load_books()
     while True:
         print("""
 📚 Kutubxona Menejeri
-1 Kitoblarni ko'rish
-2 Kitob qo'shish
-3 Kitob qidirish
-4 Kitob o'chirish
-5 Kitonni yangilash
-5 Kitoblarni tartiblash
-0 Chiqish
-      """)
+1️⃣ Kitoblarni ko'rish
+2️⃣ Kitob qo'shish
+3️⃣ Kitob qidirish
+4️⃣ Kitob o'chirish
+5️⃣ Kitobni yangilash
+6️⃣ Kitoblarni tartiblash
+7️⃣ Statistika
+8️⃣ CSV ga eksport qilish
+0️⃣ Chiqish
+        """)
 
         choice = input("Tanlang: ")
 
@@ -32,105 +50,65 @@ def menu():
             title = input("Kitob nomi: ")
             author = input("Kitob muallifi: ")
             year = input("Nashr qilingan yili: ")
-            if not validate_year(year):
-                print("🚫 Yil raqam bo‘lishi kerak.")
-                continue
-            add_books(books, title, author, year)
-            books = load_books()
-            print("✅ Kitob qo'shildi")
+            if add_book(books, title, author, year):
+                books = load_books()
+                print("✅ Kitob qo'shildi")
+            else:
+                print("❌ Kitob qo'shilmadi")
         elif choice == '3':
-            keyword = input("Qidiruv: ")
+            keyword = input("Qidiruv so'zi: ")
             results = search_books(books, keyword)
-            show_books(results)
-
+            if results:
+                print(f"\n🔍 {len(results)} ta natija topildi:")
+                show_books(results)
+            else:
+                print("🔍 Hech qanday natija topilmadi")
         elif choice == '4':
             title = input("O'chirish uchun kitob nomi: ")
-            books = delete_books(books, title)
-            print("✅ Kitob o‘chirildi.")
-
+            if delete_book(books, title):
+                books = load_books()
+                print("✅ Kitob o'chirildi.")
+            else:
+                print("❌ Kitob o'chirilmadi.")
         elif choice == '5':
             old_title = input("Qaysi kitobni yangilaysiz (eski nomi): ")
             new_title = input("Yangi nom: ")
             new_author = input("Yangi muallif: ")
             new_year = input("Yangi yil: ")
-            if not validate_year(new_year):
-                print("🚫 Yil raqam bo‘lishi kerak.")
-                continue
-            update_book(books, old_title, new_title, new_author, new_year)
-            books = load_books()
-            print("✅ Kitob yangilandi.")
+            if update_book(books, old_title, new_title, new_author, new_year):
+                books = load_books()
+                print("✅ Kitob yangilandi.")
+            else:
+                print("❌ Kitob yangilanmadi.")
         elif choice == '6':
-            key = input("Nima bo‘yicha? (title/year): ").strip()
-            books = sort_books(books, key)
-            show_books(books)
+            print("Saralash bo'yicha tanlang:")
+            print("1. Nomi bo'yicha")
+            print("2. Muallif bo'yicha")
+            print("3. Yili bo'yicha")
+            sort_choice = input("Tanlang (1-3): ")
+            sort_keys = {'1': 'title', '2': 'author', '3': 'year'}
+            if sort_choice in sort_keys:
+                sorted_books = sort_books(books, sort_keys[sort_choice])
+                show_books(sorted_books)
+            else:
+                print("❌ Noto'g'ri tanlov")
+        elif choice == '7':
+            show_statistics(books)
+        elif choice == '8':
+            filename = input(
+                "CSV fayl nomi (default: books_export.csv): ").strip()
+            if not filename:
+                filename = 'books_export.csv'
+            if export_books_to_csv(books, filename):
+                print(f"✅ Kitoblar {filename} faylga saqlandi")
+            else:
+                print("❌ Eksport qilishda xatolik")
         elif choice == '0':
             print("👋 Dasturdan chiqildi.")
             break
         else:
-            print("🚫 Noto‘g‘ri tanlov.")
+            print("🚫 Noto'g'ri tanlov.")
 
 
 if __name__ == "__main__":
     menu()
-
-
-'''
-def menu():
-    books = load_books()
-    while True:
-        print("""
-📚 Kutubxona Menejeri
-1️⃣ Kitoblarni ko‘rish
-2️⃣ Kitob qo‘shish
-3️⃣ Kitob qidirish
-4️⃣ Kitobni o‘chirish
-5️⃣ Kitobni yangilash
-6️⃣ Kitoblarni tartiblash
-0️⃣ Chiqish
-        """)
-        choice = input("Tanlang: ")
-
-        if choice == '1':
-            show_books(books)
-        elif choice == '2':
-            title = input("Kitob nomi: ")
-            author = input("Muallif: ")
-            year = input("Yil: ")
-            if not validate_year(year):
-                print("🚫 Yil raqam bo‘lishi kerak.")
-                continue
-            add_book(books, title, author, year)
-            books = load_books()
-            print("✅ Kitob qo‘shildi.")
-        elif choice == '3':
-            keyword = input("Qidiruv: ")
-            results = search_books(books, keyword)
-            show_books(results)
-        elif choice == '4':
-            title = input("O‘chirish uchun kitob nomi: ")
-            books = delete_book(books, title)
-            print("✅ Kitob o‘chirildi.")
-        elif choice == '5':
-            old_title = input("Qaysi kitobni yangilaysiz (eski nomi): ")
-            new_title = input("Yangi nom: ")
-            new_author = input("Yangi muallif: ")
-            new_year = input("Yangi yil: ")
-            if not validate_year(new_year):
-                print("🚫 Yil raqam bo‘lishi kerak.")
-                continue
-            update_book(books, old_title, new_title, new_author, new_year)
-            books = load_books()
-            print("✅ Kitob yangilandi.")
-        elif choice == '6':
-            key = input("Nima bo‘yicha? (title/year): ").strip()
-            books = sort_books(books, key)
-            show_books(books)
-        elif choice == '0':
-            print("👋 Dasturdan chiqildi.")
-            break
-        else:
-            print("🚫 Noto‘g‘ri tanlov.")
-
-if __name__ == "__main__":
-    menu()
-'''
