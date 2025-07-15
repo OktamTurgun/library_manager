@@ -35,6 +35,7 @@ Python asosida yozilgan oddiy, lekin kengaytirilgan kutubxona boshqaruv dasturi.
 - `csv` moduli (eksport uchun)
 - `typing` moduli (type hints uchun)
 - `datetime` moduli (yil validatsiyasi uchun)
+- `unittest` moduli (testlar uchun)
 - Fayllar bilan ishlash
 - Funksiya, sikl, shart operatorlari
 - Modulga ajratilgan kod (`utils/helpers.py`)
@@ -52,6 +53,11 @@ cd library-manager
 2️⃣ Dastur ishga tushirish:
 ```bash
 python main.py
+```
+
+3️⃣ Testlarni ishga tushirish:
+```bash
+python run_tests.py
 ```
 
 ---
@@ -91,6 +97,35 @@ Dastur ishga tushgandan so'ng quyidagi menyu ko'rinadi:
 
 ---
 
+## 🧪 Testlar
+
+Loyiha keng qamrovli testlar bilan ta'minlangan:
+
+### Test tuzilishi:
+- `tests/test_helpers.py` - Yordamchi funksiyalar testlari
+- `tests/test_main.py` - Asosiy funksiyalar testlari
+- `run_tests.py` - Test ishga tushiruvchi
+
+### Test qamrovi:
+- ✅ Fayl o'qish/yozish operatsiyalari
+- ✅ Ma'lumotlar validatsiyasi
+- ✅ Kitob qo'shish/o'chirish/yangilash
+- ✅ Qidiruv va saralash funksiyalari
+- ✅ Statistika hisoblash
+- ✅ CSV eksport
+- ✅ Xatoliklar bilan ishlash
+
+### Test natijalari:
+```bash
+📊 Test natijalari:
+   ✅ Muvaffaqiy: 25
+   ❌ Xatoliklar: 0
+   ⚠️  Xatolar: 0
+   📊 Jami: 25
+```
+
+---
+
 ## 📂 Papka tuzilishi
 ```text
 library-manager/
@@ -99,6 +134,11 @@ library-manager/
 │   └── books.json      # Kitoblar ma'lumotlari
 ├── utils/
 │   └── helpers.py      # Yordamchi funksiyalar
+├── tests/
+│   ├── __init__.py     # Test paketi
+│   ├── test_helpers.py # Helpers funksiyalari testlari
+│   └── test_main.py    # Main funksiyalari testlari
+├── run_tests.py         # Test ishga tushiruvchi
 ├── README.md
 ├── .gitignore
 ├── LICENSE
@@ -117,12 +157,14 @@ library-manager/
 - `get_book_statistics()` - statistika hisoblash
 - `export_books_to_csv()` - CSV eksport
 - Yaxshilangan `validate_year()` - yil tekshirish
+- `run_tests.py` - test ishga tushiruvchi
 
 ### Kod sifatini oshirish:
 - Type hints qo'shildi
 - Docstring dokumentatsiyasi
 - Input validatsiyasi
 - Duplikat tekshirish
+- Unit testlar qo'shildi
 
 ### Foydalanuvchi interfeysi:
 - Yaxshilangan xabar berish
